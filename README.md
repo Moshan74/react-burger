@@ -36,3 +36,6 @@
 		'@utils': path.resolve(__dirname, './src/utils'),
 	},
 ```
+
+api
+ https://new-stellarburgers.education-services.ru/api/ingredients

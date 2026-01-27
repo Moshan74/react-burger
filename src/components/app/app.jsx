@@ -3,6 +3,8 @@ import { BurgerConstructor } from '@components/burger-constructor/burger-constru
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 import { ingredients } from '@utils/ingredients';
 
+import ApiIingredients from '../api-ingredients/api-ingredients.jsx';
+
 import styles from './app.module.css';
 
 export const App = () => {
@@ -16,6 +18,7 @@ export const App = () => {
         <BurgerIngredients ingredients={ingredients} />
         <BurgerConstructor ingredients={ingredients} />
       </main>
+      <ApiIingredients />
     </div>
   );
 };
