@@ -3,7 +3,7 @@ import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import styles from './burger-ingredients.module.css';
 
 export const BurgerIngredients = ({ ingredients }) => {
-  console.log(ingredients);
+  console.log('BurgerIngredients', ingredients);
 
   return (
     <section className={styles.burger_ingredients}>

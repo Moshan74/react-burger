@@ -5,9 +5,9 @@ function ApiIngredients() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // Для обработки ошибок
 
-  useEffect(async () => {
+  useEffect(() => {
     // Запрос к API при первом рендере компонента
-    await fetch('https://new-stellarburgers.education-services.ru/api/ingredients')
+    fetch('https://new-stellarburgers.education-services.ru/api/ingredients')
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
