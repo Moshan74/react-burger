@@ -13,7 +13,9 @@ export const useApiIngredients = () => {
         );
 
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          console.error('Ошибка сети http status:', response.status);
+          setError(`Ошибка сети http status: ${response.status}`);
+          throw new Error(`Ошибка сети http status: ${response.status}`);
         }
 
         const data = await response.json();
