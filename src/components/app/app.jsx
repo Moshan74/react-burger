@@ -32,7 +32,7 @@ export const App = () => {
   }
   //Modal Order
   function handleOpenModalOrder() {
-    handleIngredientEmpty();
+    handleIngredientsEmpty();
     setVisibleModalOrder(true);
   }
   function handleCloseModalOrder() {
@@ -47,9 +47,13 @@ export const App = () => {
       },
     ]);
   }, []);
-  //Очистить ингредиент из заказа
-  const handleIngredientEmpty = useCallback(() => {
+  //Очистить ингредиентs из заказа
+  const handleIngredientsEmpty = useCallback(() => {
     setSelectedIngredients([]);
+  }, []);
+  //Очистить ингредиент из заказа
+  const handleIngredientDelete = useCallback((ingredient) => {
+    setSelectedIngredients((prev) => prev.filter((item) => item._id !== ingredient._id));
   }, []);
 
   return (
@@ -71,6 +75,7 @@ export const App = () => {
           <BurgerConstructor
             ingredients={selectedIngredients}
             onClick={handleOpenModalOrder}
+            onDelete={handleIngredientDelete}
           />
         </main>
       )}

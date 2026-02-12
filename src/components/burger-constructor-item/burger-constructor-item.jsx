@@ -5,16 +5,34 @@ import {
 
 import styles from './burger-constructor-item.module.css';
 
-export const BurgerConstructorItem = ({ ingredient, type }) => {
+export const BurgerConstructorItem = ({
+  ingredient,
+  type,
+  onDelete,
+  isLocked = false,
+}) => {
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(ingredient);
+    }
+  };
+
   return (
     <div className={styles.control}>
       {/* Булочка сверху */}
-      {type === 'top' && ingredient.type === 'bun' && (
+      {isLocked && type === 'top' && ingredient.type === 'bun' && (
         <ConstructorElement
-          handleClose={function fee() {
-            console.log('kjhkjh');
-          }}
+          handleClose={handleDelete}
           isLocked
+          price={ingredient.price}
+          text={ingredient.name}
+          thumbnail={ingredient.image_mobile}
+          type="top"
+        />
+      )}
+      {!isLocked && type === 'top' && ingredient.type === 'bun' && (
+        <ConstructorElement
+          handleClose={handleDelete}
           price={ingredient.price}
           text={ingredient.name}
           thumbnail={ingredient.image_mobile}
@@ -27,9 +45,7 @@ export const BurgerConstructorItem = ({ ingredient, type }) => {
         <div>
           <DragIcon type="primary" />
           <ConstructorElement
-            handleClose={function fee() {
-              console.log('kjhkjh');
-            }}
+            handleClose={handleDelete}
             price={ingredient.price}
             text={ingredient.name}
             thumbnail={ingredient.image_mobile}
@@ -38,12 +54,19 @@ export const BurgerConstructorItem = ({ ingredient, type }) => {
       )}
 
       {/* Булочка снизу */}
-      {type === 'bottom' && ingredient.type === 'bun' && (
+      {isLocked && type === 'bottom' && ingredient.type === 'bun' && (
         <ConstructorElement
-          handleClose={function fee() {
-            console.log('kjhkjh');
-          }}
+          handleClose={handleDelete}
           isLocked
+          price={ingredient.price}
+          text={ingredient.name}
+          thumbnail={ingredient.image_mobile}
+          type="bottom"
+        />
+      )}
+      {!isLocked && type === 'bottom' && ingredient.type === 'bun' && (
+        <ConstructorElement
+          handleClose={handleDelete}
           price={ingredient.price}
           text={ingredient.name}
           thumbnail={ingredient.image_mobile}

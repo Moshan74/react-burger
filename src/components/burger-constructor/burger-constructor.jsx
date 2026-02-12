@@ -5,7 +5,7 @@ import { BurgerConstructorItem } from '@components/burger-constructor-item/burge
 
 import styles from './burger-constructor.module.css';
 
-export const BurgerConstructor = ({ ingredients = [], onClick }) => {
+export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
   const handleOrder = () => {
     if (onClick) {
       onClick();
@@ -25,9 +25,13 @@ export const BurgerConstructor = ({ ingredients = [], onClick }) => {
   // Синхронизация состояний при изменении `ingredients`
   useEffect(() => {
     setViewBuns(buns);
+  }, [ingredients]);
+  useEffect(() => {
     setViewMains(mains);
+  }, [ingredients]);
+  useEffect(() => {
     setViewSauces(sauces);
-  }, [buns, mains, sauces]);
+  }, [ingredients]);
   //total
   const total = [...viewBuns, ...viewMains, ...viewSauces].reduce(
     (sum, ingredient) => sum + ingredient.price,
@@ -49,6 +53,8 @@ export const BurgerConstructor = ({ ingredients = [], onClick }) => {
                     key={`${ingredient._id}-itop`}
                     ingredient={ingredient}
                     type="top"
+                    onDelete={onDelete}
+                    isLocked={viewMains.length > 0 || viewSauces.length > 0}
                   />
                 )}
 
@@ -62,6 +68,7 @@ export const BurgerConstructor = ({ ingredients = [], onClick }) => {
                             key={`${ingredient._id}-imains`}
                             ingredient={ingredient}
                             type="middle"
+                            onDelete={onDelete}
                           />
                         )}
                       </div>
@@ -79,6 +86,7 @@ export const BurgerConstructor = ({ ingredients = [], onClick }) => {
                             key={`${ingredient._id}-isause`}
                             ingredient={ingredient}
                             type="middle"
+                            onDelete={onDelete}
                           />
                         )}
                       </div>
@@ -92,6 +100,8 @@ export const BurgerConstructor = ({ ingredients = [], onClick }) => {
                     key={`${ingredient._id}-bottom`}
                     ingredient={ingredient}
                     type="bottom"
+                    onDelete={onDelete}
+                    isLocked={viewMains.length > 0 || viewSauces.length > 0}
                   />
                 )}
               </div>
