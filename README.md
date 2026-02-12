@@ -39,3 +39,8 @@
 
 api
  https://new-stellarburgers.education-services.ru/api/ingredients
+
+ Первая команда — это установка зависимостей, вторая — запуск локального веб-сервера:
+
+npm install
+npm run dev 
