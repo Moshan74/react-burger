@@ -1,18 +1,5 @@
-.burger_constructor {
-  display: flex;
-  flex-direction: column;
-  width: 600px;
-  padding-bottom: 20px;
-  overflow-y: auto;
-  color: var(--text-primary-color);
-}
-
 .button {
   padding: 20px;
-}
-
-.control {
-  width: 600px;
 }
 
 .items {

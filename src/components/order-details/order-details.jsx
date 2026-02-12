@@ -1,35 +1,15 @@
-import { CurrencyIcon, Counter } from '@krgaa/react-developer-burger-ui-components';
-
 import styles from './order-details.module.css';
 
-export const OrderDetails = ({ ingredient, type, count }) => {
-
-console.log("OrderDetails", ingredient, type, count)
-
+export const OrderDetails = ({ order }) => {
   return (
-    <div className="ingredient-card" data-type={type}>
-      <div className="ingredient-image-wrapper">
-        <img 
-          src={ingredient.image} 
-          alt={ingredient.name} 
-          className="ingredient-image"
-        />
-        {count > 0 && (
-          <Counter count={count} size="default" />
-        )}
-      </div>
-      
-      <div className="ingredient-price">
-        <span className="text text_type_digits-default">
-          {ingredient.price}
-        </span>
-        <CurrencyIcon type="primary" />
-      </div>
-      
-      <p className="text text_type_main-default ingredient-name">
-        {ingredient.name}
-      </p>      
+    <div className={styles.order}>
+      <div className="text text_type_digits-medium">{order}</div>
 
+      <div className="text text_type_main-small">Ваш заказ начали готовить!</div>
+
+      <div className="text text_type_main-default text_color_inactive">
+        Дождитесь готовность наорбитальной станции.
+      </div>
     </div>
   );
 };

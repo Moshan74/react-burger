@@ -1,17 +1,8 @@
-import { CurrencyIcon, Counter, Button } from '@krgaa/react-developer-burger-ui-components';
+import { Button } from '@krgaa/react-developer-burger-ui-components';
 
 import styles from './ingredient-details.module.css';
 
-export const IngredientDetails = ({ ingredient, type, count, onClick, onAdd }) => {
-
-console.log("IngredientDetails", ingredient, type, count);
-
- const handleClick = () => {
-    if (onClick) {
-      onClick(ingredient);
-    }
-  };
-
+export const IngredientDetails = ({ ingredient, onAdd }) => {
   const handleAdd = () => {
     if (onAdd) {
       onAdd(ingredient);
@@ -19,37 +10,56 @@ console.log("IngredientDetails", ingredient, type, count);
   };
 
   return (
-    <div className="ingredient-card" data-type={type} onClick={handleClick}>
-      <div className="ingredient-image-wrapper">
-        <img 
-          src={ingredient.image} 
-          alt={ingredient.name} 
-          className="ingredient-image"
-        />
-        {count > 0 && (
-          <Counter count={count} size="default" />
-        )}
+    <div className={styles.card}>
+      <div>
+        <img src={ingredient.image_large} alt={ingredient.name} />
       </div>
-      
-      <div className="ingredient-price">
-        <span className="text text_type_digits-default">
-          {ingredient.price}
-        </span>
-        <CurrencyIcon type="primary" />
+
+      <h3 className="text text_type_main-medium mt-4 mb-8">{ingredient.name}</h3>
+
+      <div className={styles.items}>
+        <div className={styles.item}>
+          <span className="text text_type_main-default text_color_inactive">
+            Калории,ккал
+          </span>
+          <span className="text text_type_digits-default text_color_inactive mt-2">
+            {ingredient.calories}
+          </span>
+        </div>
+
+        <div className={styles.item}>
+          <span className="text text_type_main-default text_color_inactive">
+            Белки, г
+          </span>
+          <span className="text text_type_digits-default text_color_inactive mt-2">
+            {ingredient.proteins}
+          </span>
+        </div>
+
+        <div className={styles.item}>
+          <span className="text text_type_main-default text_color_inactive">
+            Жиры, г
+          </span>
+          <span className="text text_type_digits-default text_color_inactive mt-2">
+            {ingredient.fat}
+          </span>
+        </div>
+
+        <div className={styles.item}>
+          <span className="text text_type_main-default text_color_inactive">
+            Углеводы, г
+          </span>
+          <span className="text text_type_digits-default text_color_inactive mt-2">
+            {ingredient.carbohydrates}
+          </span>
+        </div>
       </div>
-      
-      <p className="text text_type_main-default ingredient-name">
-        {ingredient.name}
-      </p>     
 
-      <Button
-        onClick={handleAdd}
-        size="small"
-        type="primary"
-      >
-        Добавить
-      </Button> 
-
+      <div className={styles.button}>
+        <Button onClick={handleAdd} size="small" type="primary">
+          Добавить
+        </Button>
+      </div>
     </div>
   );
 };
