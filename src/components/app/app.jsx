@@ -20,6 +20,9 @@ export const App = () => {
   //Выбранные ингредиенты
   const [selectedIngredient, setSelectedIngredient] = useState();
   const [selectedIngredients, setSelectedIngredients] = useState([]);
+  //Блокировка кнопки добавить
+  const [isLockedBun, setIsLockedBun] = useState(false);
+  const [isLockedIngredients, setIsLockedIngredients] = useState(true);
 
   //***Обработчики событий***//
   //Modal Ingredient
@@ -40,6 +43,12 @@ export const App = () => {
   }
   //Добавиьт ингредиент в заказ
   const handleIngredientAdd = useCallback((ingredient) => {
+    //Блокируем отображения Кнопки Добавить
+    if (ingredient.type === 'bun') {
+      setIsLockedBun(true);
+      setIsLockedIngredients(false);
+    }
+
     setSelectedIngredients((prev) => [
       ...prev,
       {
@@ -49,10 +58,19 @@ export const App = () => {
   }, []);
   //Очистить ингредиентs из заказа
   const handleIngredientsEmpty = useCallback(() => {
+    //РазБлокируем отображения Кнопки Добавить
+    setIsLockedBun(true);
+    setIsLockedIngredients(false);
     setSelectedIngredients([]);
   }, []);
   //Очистить ингредиент из заказа
   const handleIngredientDelete = useCallback((ingredient) => {
+    //РазБлокируем отображения Кнопки Добавить
+    if (ingredient.type === 'bun') {
+      setIsLockedBun(false);
+      setIsLockedIngredients(true);
+    }
+
     setSelectedIngredients((prev) => prev.filter((item) => item._id !== ingredient._id));
   }, []);
 
@@ -71,6 +89,8 @@ export const App = () => {
             ingredients={ingredients}
             onClick={handleOpenModalIngredient}
             onAdd={handleIngredientAdd}
+            isLockedBun={isLockedBun}
+            isLockedIngredients={isLockedIngredients}
           />
           <BurgerConstructor
             ingredients={selectedIngredients}
@@ -93,6 +113,8 @@ export const App = () => {
           <IngredientDetails
             ingredient={selectedIngredient}
             onAdd={handleIngredientAdd}
+            isLockedBun={isLockedBun}
+            isLockedIngredients={isLockedIngredients}
           />
         </Modal>
       )}

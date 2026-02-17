@@ -2,7 +2,18 @@
   display: flex;
   flex-direction: column;
   max-width: 600px;
+  padding: 20px 0;
   color: var(--text-primary-color);
   font-family: 'Jet Brains Mono', serif;
   text-align: center;
+}
+
+.order > div {
+  margin: 10px 0; /* 10px сверху и снизу */
+}
+.order > div:first-child {
+  margin-top: 0;
+}
+.order > div:last-child {
+  margin-bottom: 0;
 }

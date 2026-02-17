@@ -1,11 +1,17 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { BurgerIngredientItem } from '@components/burger-ingredients-item/burger-ingredients-item';
 
 import styles from './burger-ingredients.module.css';
 
-export const BurgerIngredients = ({ ingredients = [], onClick, onAdd }) => {
+export const BurgerIngredients = ({
+  ingredients = [],
+  onClick,
+  onAdd,
+  isLockedBun = false,
+  isLockedIngredients = false,
+}) => {
   //Активный первый Tab
   const [current, setCurrent] = useState('bun');
   //Фильтрация ingredients по типу
@@ -14,8 +20,21 @@ export const BurgerIngredients = ({ ingredients = [], onClick, onAdd }) => {
   const mains = ingredients.filter((i) => i.type === 'main');
   //Отображаемые ингредиенты
   const [viewIngredients, setViewIngredients] = useState(buns);
+  //Блокировка кнопки добавить
+  const [isLockedAdd, setIsLockedAdd] = useState(false);
 
+  // Синхронизация состояний при изменении блокировок кнопок
+  useEffect(() => {
+    //Разблокировка Кнопки Добавить
+    if (current === 'bun') setIsLockedAdd(isLockedBun);
+    else setIsLockedAdd(isLockedIngredients);
+  }, [isLockedBun, isLockedIngredients]);
+
+  //Показать ингредиенты от выбора категорий
   function showIngredients(tab, ingredients) {
+    //Разблокировка Кнопки Добавить
+    if (tab === 'bun') setIsLockedAdd(isLockedBun);
+    else setIsLockedAdd(isLockedIngredients);
     setCurrent(tab);
     setViewIngredients(ingredients);
   }
@@ -58,20 +77,19 @@ export const BurgerIngredients = ({ ingredients = [], onClick, onAdd }) => {
       </nav>
 
       {/* Загруженные ингредиенты */}
-      <div>
-        {viewIngredients && (
-          <div>
-            {viewIngredients.map((ingredient) => (
-              <BurgerIngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                onClick={onClick}
-                onAdd={onAdd}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      {viewIngredients && (
+        <div className={styles.ingredients}>
+          {viewIngredients.map((ingredient) => (
+            <BurgerIngredientItem
+              key={ingredient._id}
+              ingredient={ingredient}
+              onClick={onClick}
+              onAdd={onAdd}
+              isLockedAdd={isLockedAdd}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

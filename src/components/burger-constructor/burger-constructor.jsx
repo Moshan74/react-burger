@@ -25,13 +25,10 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
   // Синхронизация состояний при изменении `ingredients`
   useEffect(() => {
     setViewBuns(buns);
-  }, [ingredients]);
-  useEffect(() => {
     setViewMains(mains);
-  }, [ingredients]);
-  useEffect(() => {
     setViewSauces(sauces);
   }, [ingredients]);
+
   //total
   const total = [...viewBuns, ...viewMains, ...viewSauces].reduce(
     (sum, ingredient) => sum + ingredient.price,
@@ -49,18 +46,20 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
               <div key={`${ingredient._id}-top`}>
                 {/* Булочка сверху */}
                 {ingredient.type === 'bun' && (
-                  <BurgerConstructorItem
-                    key={`${ingredient._id}-itop`}
-                    ingredient={ingredient}
-                    type="top"
-                    onDelete={onDelete}
-                    isLocked={viewMains.length > 0 || viewSauces.length > 0}
-                  />
+                  <div className={styles.bun}>
+                    <BurgerConstructorItem
+                      key={`${ingredient._id}-itop`}
+                      ingredient={ingredient}
+                      type="top"
+                      onDelete={onDelete}
+                      isLocked={viewMains.length > 0 || viewSauces.length > 0}
+                    />
+                  </div>
                 )}
 
-                {viewMains.length > 0 && (
-                  <div>
-                    {viewMains.map((ingredient) => (
+                <div className={styles.ingredients}>
+                  {viewMains.length > 0 &&
+                    viewMains.map((ingredient) => (
                       <div key={`${ingredient._id}-mains`}>
                         {/* Начинки */}
                         {ingredient.type != 'bun' && (
@@ -73,14 +72,11 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
                         )}
                       </div>
                     ))}
-                  </div>
-                )}
 
-                {viewSauces.length > 0 && (
-                  <div>
-                    {viewSauces.map((ingredient) => (
+                  {viewSauces.length > 0 &&
+                    viewSauces.map((ingredient) => (
                       <div key={`${ingredient._id}-sause`}>
-                        {/* Начинки */}
+                        {/*  Соусы */}
                         {ingredient.type != 'bun' && (
                           <BurgerConstructorItem
                             key={`${ingredient._id}-isause`}
@@ -91,18 +87,19 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
                         )}
                       </div>
                     ))}
-                  </div>
-                )}
+                </div>
 
                 {/* Булочка снизу */}
                 {ingredient.type === 'bun' && (
-                  <BurgerConstructorItem
-                    key={`${ingredient._id}-bottom`}
-                    ingredient={ingredient}
-                    type="bottom"
-                    onDelete={onDelete}
-                    isLocked={viewMains.length > 0 || viewSauces.length > 0}
-                  />
+                  <div className={styles.bun}>
+                    <BurgerConstructorItem
+                      key={`${ingredient._id}-bottom`}
+                      ingredient={ingredient}
+                      type="bottom"
+                      onDelete={onDelete}
+                      isLocked={viewMains.length > 0 || viewSauces.length > 0}
+                    />
+                  </div>
                 )}
               </div>
             ))}
@@ -110,6 +107,7 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
         )}
       </div>
 
+      {/* Оформит заказ */}
       <div className={styles.control}>
         {ingredients.length > 0 && total > 0 && (
           <div className={styles.items}>
@@ -118,14 +116,12 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
               <CurrencyIcon type="primary" />
             </div>
 
-            <div>
-              <div className={styles.button}>
-                {
-                  <Button onClick={handleOrder} size="small" type="primary">
-                    Оформить заказ
-                  </Button>
-                }
-              </div>
+            <div className={styles.button}>
+              {
+                <Button onClick={handleOrder} size="medium" type="primary">
+                  Оформить заказ
+                </Button>
+              }
             </div>
           </div>
         )}

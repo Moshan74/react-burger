@@ -1,13 +1,29 @@
 import { Button } from '@krgaa/react-developer-burger-ui-components';
+import { useState, useEffect } from 'react';
 
 import styles from './ingredient-details.module.css';
 
-export const IngredientDetails = ({ ingredient, onAdd }) => {
+export const IngredientDetails = ({
+  ingredient,
+  onAdd,
+  isLockedBun = false,
+  isLockedIngredients = false,
+}) => {
   const handleAdd = () => {
     if (onAdd) {
       onAdd(ingredient);
     }
   };
+
+  //Блокировка кнопки добавить
+  const [isLockedAdd, setIsLockedAdd] = useState(false);
+
+  // Синхронизация состояний при изменении блокировок кнопок
+  useEffect(() => {
+    //Разблокировка Кнопки Добавить
+    if (ingredient.type === 'bun') setIsLockedAdd(isLockedBun);
+    else setIsLockedAdd(isLockedIngredients);
+  }, [isLockedBun, isLockedIngredients]);
 
   return (
     <div className={styles.card}>
@@ -55,11 +71,15 @@ export const IngredientDetails = ({ ingredient, onAdd }) => {
         </div>
       </div>
 
-      <div className={styles.button}>
-        <Button onClick={handleAdd} size="small" type="primary">
-          Добавить
-        </Button>
-      </div>
+      {!isLockedAdd && (
+        <div className={styles.button}>
+          {
+            <Button onClick={handleAdd} size="small" type="primary">
+              Добавить
+            </Button>
+          }
+        </div>
+      )}
     </div>
   );
 };

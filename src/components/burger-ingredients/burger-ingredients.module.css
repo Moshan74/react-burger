@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   max-width: 600px;
+  overflow-y: auto;
   color: var(--text-primary-color);
   font-family: 'Jet Brains Mono', serif;
-  overflow-y: auto;
 }
 
 .menu {
@@ -13,4 +13,14 @@
   padding: 0;
   text-align: center;
   list-style-type: none;
+}
+
+.ingredients {
+  display: flex;
+  flex-flow: row wrap;
+  max-width: 600px;
+  max-height: 1200px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
 }

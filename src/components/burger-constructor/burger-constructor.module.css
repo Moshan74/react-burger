@@ -3,8 +3,22 @@
   flex-direction: column;
   width: 600px;
   padding-bottom: 20px;
-  overflow-y: auto;
+  overflow: hidden auto;
   color: var(--text-primary-color);
+}
+
+.bun {
+  margin-left: 24px;
+}
+
+.ingredients {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 600px;
+  height: 100%;
+  max-height: 464px;
+  overflow: hidden auto;
 }
 
 .button {
@@ -12,11 +26,13 @@
 }
 
 .control {
-  width: 600px;
+  display: flex;
+  width: 100%;
 }
 
 .items {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 20px;
   width: 100%;
@@ -27,6 +43,7 @@
 .item {
   display: flex;
   align-items: center;
-  gap: 10px;
+
+  /* gap: 10px; */
   max-width: 200px;
 }

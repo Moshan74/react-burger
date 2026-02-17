@@ -25,7 +25,7 @@ export const BurgerConstructorItem = ({
           handleClose={handleDelete}
           isLocked
           price={ingredient.price}
-          text={ingredient.name}
+          text={`${ingredient.name} (верхняя)`}
           thumbnail={ingredient.image_mobile}
           type="top"
         />
@@ -34,7 +34,7 @@ export const BurgerConstructorItem = ({
         <ConstructorElement
           handleClose={handleDelete}
           price={ingredient.price}
-          text={ingredient.name}
+          text={`${ingredient.name} (верхняя)`}
           thumbnail={ingredient.image_mobile}
           type="top"
         />
@@ -59,7 +59,7 @@ export const BurgerConstructorItem = ({
           handleClose={handleDelete}
           isLocked
           price={ingredient.price}
-          text={ingredient.name}
+          text={`${ingredient.name} (нижняя)`}
           thumbnail={ingredient.image_mobile}
           type="bottom"
         />
@@ -68,7 +68,7 @@ export const BurgerConstructorItem = ({
         <ConstructorElement
           handleClose={handleDelete}
           price={ingredient.price}
-          text={ingredient.name}
+          text={`${ingredient.name} (нижняя)`}
           thumbnail={ingredient.image_mobile}
           type="bottom"
         />
