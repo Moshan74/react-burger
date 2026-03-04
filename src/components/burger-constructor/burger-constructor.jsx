@@ -1,11 +1,24 @@
 import { Button, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useEffect } from 'react';
+import { useDrop } from 'react-dnd';
 
 import { BurgerConstructorItem } from '@components/burger-constructor-item/burger-constructor-item';
 
 import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
+  // Зона для перетаскивания ингредиентов
+  const [{ isHover }, dropRef] = useDrop({
+    accept: 'INGREDIENT',
+    collect: (monitor) => ({
+      isHover: monitor.isOver(),
+    }),
+  });
+
+  const borderColor = isHover ? 'lightgreen' : 'transparent';
+
+  console.log(borderColor);
+
   const handleOrder = () => {
     if (onClick) {
       onClick();
@@ -39,7 +52,7 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
     <section className={styles.burger_constructor}>
       {/* Выбранные ингредиенты */}
       <h3>Ваш собранный Бургер</h3>
-      <div>
+      <div ref={dropRef}>
         {viewBuns && (
           <div>
             {viewBuns.map((ingredient) => (
