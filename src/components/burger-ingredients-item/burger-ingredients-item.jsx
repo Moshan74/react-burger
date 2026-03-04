@@ -10,19 +10,31 @@ export const BurgerIngredientItem = ({
   isLockedAdd = false,
 }) => {
   // Перетаскиваемый ингредиент
-  const [{ isDrag }, dragRef] = useDrag({
+  const [{ isDragging }, dragRef] = useDrag({
     type: 'INGREDIENT',
-    item: { ingredient },
+    item: ingredient, // Передаём объект напрямую
+
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult();
+      if (monitor.didDrop()) {
+        console.log('✔️ Drag completed, dropped on:', dropResult);
+      } else {
+        console.log('❌ Drag cancelled');
+      }
+    },
+
     collect: (monitor) => ({
-      isDrag: monitor.isDragging(),
+      isDragging: monitor.isDragging(),
+      canDrag: monitor.canDrag(),
     }),
+    canDrag: !isLockedAdd, // Блокируем перетаскивание, если кнопка заблокирована
   });
 
-  const borderColor = isDrag ? 'lightgreen' : 'transparent';
-
-  console.log(borderColor);
+  const borderColor = isDragging ? 'lightgreen' : 'transparent';
 
   const handleClick = () => {
+    // Предотвращаем клик при начале перетаскивания
+    if (isDragging) return;
     if (onClick) {
       onClick(ingredient);
     }
@@ -37,10 +49,12 @@ export const BurgerIngredientItem = ({
 
   return (
     <div
-      className={styles.items}
+      //className={styles.items}
+      className={`${styles.items}`}
       onClick={handleClick}
-      key={ingredient._id}
+      //key={ingredient._id}
       ref={dragRef}
+      style={{ border: `2px solid ${borderColor}` }}
     >
       <div>
         <img src={ingredient.image} alt={ingredient.name} />

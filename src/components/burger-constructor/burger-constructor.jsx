@@ -1,4 +1,5 @@
 import { Button, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
+import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 
@@ -6,18 +7,29 @@ import { BurgerConstructorItem } from '@components/burger-constructor-item/burge
 
 import styles from './burger-constructor.module.css';
 
-export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
+export const BurgerConstructor = ({ ingredients = [], onClick, onDelete, onAdd }) => {
   // Зона для перетаскивания ингредиентов
-  const [{ isHover }, dropRef] = useDrop({
+  const [{ isHover, canDrop }, dropRef] = useDrop({
     accept: 'INGREDIENT',
+    drop: (draggedItem) => {
+      console.log('BurgerConstructor draggedItem', draggedItem);
+      // Проверяем, что перетаскивается ингредиент
+      //if (!draggedItem || !draggedItem.type) return;
+
+      // Предотвращаем добавление булочки, если она уже есть
+      //if (draggedItem.type === 'bun') {
+      //  const existingBuns = ingredients.filter(i => i.type === 'bun');
+      //  if (existingBuns.length > 0) return; // Булочка уже добавлена
+      //}
+
+      // Добавляем ингредиент через пропс onAdd
+      onAdd(draggedItem);
+    },
     collect: (monitor) => ({
       isHover: monitor.isOver(),
+      canDrop: monitor.canDrop(),
     }),
   });
-
-  const borderColor = isHover ? 'lightgreen' : 'transparent';
-
-  console.log(borderColor);
 
   const handleOrder = () => {
     if (onClick) {
@@ -48,20 +60,32 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
     0
   );
 
+  const dropStyle = {
+    border: isHover
+      ? '3px dashed lightgreen'
+      : canDrop
+        ? '2px dashed #4CAF50'
+        : '2px dashed #ccc',
+    backgroundColor: isHover ? '#f0fff0' : 'transparent',
+    padding: '20px',
+    minHeight: '200px',
+    transition: 'all 0.2s ease',
+  };
+
   return (
     <section className={styles.burger_constructor}>
       {/* Выбранные ингредиенты */}
       <h3>Ваш собранный Бургер</h3>
-      <div ref={dropRef}>
+      <div ref={dropRef} style={dropStyle}>
         {viewBuns && (
           <div>
             {viewBuns.map((ingredient) => (
-              <div key={`${ingredient._id}-top`}>
+              <div key={`${nanoid()}-top`}>
                 {/* Булочка сверху */}
                 {ingredient.type === 'bun' && (
                   <div className={styles.bun}>
                     <BurgerConstructorItem
-                      key={`${ingredient._id}-itop`}
+                      key={`${nanoid()}-itop`}
                       ingredient={ingredient}
                       type="top"
                       onDelete={onDelete}
@@ -73,11 +97,11 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
                 <div className={styles.ingredients}>
                   {viewMains.length > 0 &&
                     viewMains.map((ingredient) => (
-                      <div key={`${ingredient._id}-mains`}>
+                      <div key={`${nanoid()}-mains`}>
                         {/* Начинки */}
                         {ingredient.type != 'bun' && (
                           <BurgerConstructorItem
-                            key={`${ingredient._id}-imains`}
+                            key={`${nanoid()}-imains`}
                             ingredient={ingredient}
                             type="middle"
                             onDelete={onDelete}
@@ -88,11 +112,11 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
 
                   {viewSauces.length > 0 &&
                     viewSauces.map((ingredient) => (
-                      <div key={`${ingredient._id}-sause`}>
+                      <div key={`${nanoid()}-sause`}>
                         {/*  Соусы */}
                         {ingredient.type != 'bun' && (
                           <BurgerConstructorItem
-                            key={`${ingredient._id}-isause`}
+                            key={`${nanoid()}-isause`}
                             ingredient={ingredient}
                             type="middle"
                             onDelete={onDelete}
@@ -106,7 +130,7 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete }) => {
                 {ingredient.type === 'bun' && (
                   <div className={styles.bun}>
                     <BurgerConstructorItem
-                      key={`${ingredient._id}-bottom`}
+                      key={`${nanoid()}-bottom`}
                       ingredient={ingredient}
                       type="bottom"
                       onDelete={onDelete}

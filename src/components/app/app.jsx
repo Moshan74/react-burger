@@ -1,10 +1,12 @@
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { nanoid } from 'nanoid';
 import { useState, useCallback, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchIngredients } from '@/services/ingredientsSlice';
+import { createOrder, resetOrder } from '@/services/orderSlice';
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
@@ -56,13 +58,13 @@ export const App = () => {
     dispatch(closeModal());
   }
   //Modal Order
-  function handleOpenModalOrder() {
-    handleIngredientsEmpty();
-    setVisibleModalOrder(true);
-  }
-  function handleCloseModalOrder() {
-    setVisibleModalOrder(false);
-  }
+  //function handleOpenModalOrder() {
+  //  handleIngredientsEmpty();
+  //  setVisibleModalOrder(true);
+  //}
+  //function handleCloseModalOrder() {
+  //  setVisibleModalOrder(false);
+  //}
   //Добавиьт ингредиент в заказ
   const handleIngredientAdd = useCallback((ingredient) => {
     //Блокируем отображения Кнопки Добавить
@@ -75,16 +77,17 @@ export const App = () => {
       ...prev,
       {
         ...ingredient,
+        id: nanoid(),
       },
     ]);
   }, []);
   //Очистить ингредиентs из заказа
-  const handleIngredientsEmpty = useCallback(() => {
-    //РазБлокируем отображения Кнопки Добавить
-    setIsLockedBun(true);
-    setIsLockedIngredients(false);
-    setSelectedIngredients([]);
-  }, []);
+  //const handleIngredientsEmpty = useCallback(() => {
+  //  //РазБлокируем отображения Кнопки Добавить
+  //  setIsLockedBun(true);
+  //  setIsLockedIngredients(false);
+  //  setSelectedIngredients([]);
+  //}, []);
   //Очистить ингредиент из заказа
   const handleIngredientDelete = useCallback((ingredient) => {
     //РазБлокируем отображения Кнопки Добавить
@@ -93,8 +96,57 @@ export const App = () => {
       setIsLockedIngredients(true);
     }
 
-    setSelectedIngredients((prev) => prev.filter((item) => item._id !== ingredient._id));
+    setSelectedIngredients((prev) => prev.filter((item) => item.id !== ingredient.id));
   }, []);
+
+  /* Заказ */
+  // Данные заказа из хранилища
+  const {
+    //loading, // Статус загрузки
+    status, // Статус операции
+    number, // Номер заказа
+    //error, // Сообщение об ошибке
+    //orderData, // Полный ответ сервера
+  } = useSelector((state) => state.order);
+  // Обработчик оформления заказа
+  const handleOrderSubmit = useCallback(() => {
+    // Находим булочку среди выбранных ингредиентов
+    const bun = selectedIngredients.find((item) => item.type === 'bun');
+
+    // Извлекаем ID начинок (все ингредиенты, кроме булочки)
+    const fillingIds = selectedIngredients
+      .filter((item) => item.type !== 'bun')
+      .map((item) => item._id);
+
+    // Извлекаем ID ингредиентов для отправки на сервер
+    //const ingredientIds = selectedIngredients.map((item) => item._id);
+    // Формируем итоговый массив: булочка → начинки → булочка
+    const ingredientIds = [
+      bun._id, // ID булочки в начале
+      ...fillingIds, // ID начинок
+      bun._id, // ID булочки в конце
+    ];
+
+    // Отправляем асинхронный запрос на оформление заказа
+    dispatch(createOrder(ingredientIds));
+  }, [dispatch, selectedIngredients]);
+
+  // Эффект для отслеживания статуса заказа и открытия модального окна
+  useEffect(() => {
+    if (status === 'succeeded') {
+      setIsLockedBun(false);
+      setIsLockedIngredients(true);
+      setSelectedIngredients([]);
+      setVisibleModalOrder(true); // Открываем модальное окно с номером заказа
+    }
+  }, [status]);
+
+  // Функция для закрытия модального окна и сброса состояния заказа
+  const handleCloseModalOrder = useCallback(() => {
+    setVisibleModalOrder(false);
+    dispatch(resetOrder()); // Сбрасываем состояние заказа
+  }, [dispatch]);
+  /* /Заказ */
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -117,8 +169,10 @@ export const App = () => {
             />
             <BurgerConstructor
               ingredients={selectedIngredients}
-              onClick={handleOpenModalOrder}
+              //onClick={handleOpenModalOrder}
+              onClick={handleOrderSubmit}
               onDelete={handleIngredientDelete}
+              onAdd={handleIngredientAdd}
             />
           </main>
         )}
@@ -145,7 +199,7 @@ export const App = () => {
         {/* Модальное окно с заказом */}
         {visibleModalOrder && selectedIngredients && (
           <Modal title="Детали заказа" onClose={handleCloseModalOrder}>
-            <OrderDetails order={'034536'} />
+            <OrderDetails order={number} />
           </Modal>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
+import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 
 import { BurgerIngredientItem } from '@components/burger-ingredients-item/burger-ingredients-item';
@@ -81,7 +82,7 @@ export const BurgerIngredients = ({
         <div className={styles.ingredients}>
           {viewIngredients.map((ingredient) => (
             <BurgerIngredientItem
-              key={ingredient._id}
+              key={nanoid()}
               ingredient={ingredient}
               onClick={onClick}
               onAdd={onAdd}

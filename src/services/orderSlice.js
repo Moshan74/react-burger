@@ -13,7 +13,11 @@ export const createOrder = createAsyncThunk(
         },
         body: JSON.stringify({ ingredients: ingredientIds }),
       });
-      return response.order.number;
+
+      console.log('Полный ответ сервера:', response);
+
+      //return response.order.number;
+      return response; // Возвращаем полный ответ сервера
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -23,26 +27,45 @@ export const createOrder = createAsyncThunk(
 const orderSlice = createSlice({
   name: 'order',
   initialState: {
-    number: null,
     loading: false,
+    status: 'idle',
+    number: null,
     error: null,
+    orderData: null, // Полный ответ сервера
   },
-  reducers: {},
+  reducers: {
+    resetOrder: (state) => {
+      state.loading = false;
+      state.status = 'idle';
+      state.number = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
         state.loading = true;
+        state.status = 'loading';
+        state.number = null;
         state.error = null;
+        console.log('createOrder.pending', state);
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.number = action.payload;
+        state.status = 'succeeded';
+        state.number = action.payload.order?.number || action.payload.number;
+        state.error = null;
+        state.orderData = action.payload; // Полный ответ сервера
+        console.log('createOrder.fulfilled', state, action.payload);
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.status = 'failed';
+        console.log('createOrder.rejected', state, action.payload);
       });
   },
 });
 
+export const { resetOrder } = orderSlice.actions;
 export default orderSlice.reducer;
