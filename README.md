@@ -44,3 +44,5 @@ api
  Первая команда — это установка зависимостей, вторая — запуск локального веб-сервера: 
 npm install
 npm run dev 
+
+git merge origin/sprint1
