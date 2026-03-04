@@ -45,4 +45,4 @@ api
 npm install
 npm run dev 
 
-git merge origin/sprint1
+git merge origin/sprint2
