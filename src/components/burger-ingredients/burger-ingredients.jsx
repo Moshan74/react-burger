@@ -1,6 +1,5 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { nanoid } from 'nanoid';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { BurgerIngredientItem } from '@components/burger-ingredients-item/burger-ingredients-item';
 
@@ -20,7 +19,7 @@ export const BurgerIngredients = ({
   const sauces = ingredients.filter((i) => i.type === 'sauce');
   const mains = ingredients.filter((i) => i.type === 'main');
   //Отображаемые ингредиенты
-  const [viewIngredients, setViewIngredients] = useState(buns);
+  const [viewIngredients, setViewIngredients] = useState(ingredients);
   //Блокировка кнопки добавить
   const [isLockedAdd, setIsLockedAdd] = useState(false);
 
@@ -39,6 +38,11 @@ export const BurgerIngredients = ({
     setCurrent(tab);
     setViewIngredients(ingredients);
   }
+
+  // Обработчик изменения видимой секции при скролле
+  const handleSectionChange = useCallback((tab) => {
+    setCurrent(tab);
+  }, []);
 
   return (
     <section className={styles.burger_ingredients}>
@@ -82,11 +86,12 @@ export const BurgerIngredients = ({
         <div className={styles.ingredients}>
           {viewIngredients.map((ingredient) => (
             <BurgerIngredientItem
-              key={nanoid()}
+              key={ingredient._id}
               ingredient={ingredient}
               onClick={onClick}
               onAdd={onAdd}
               isLockedAdd={isLockedAdd}
+              onSectionChange={handleSectionChange}
             />
           ))}
         </div>
