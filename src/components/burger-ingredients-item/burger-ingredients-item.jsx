@@ -1,4 +1,8 @@
-import { CurrencyIcon, Button } from '@krgaa/react-developer-burger-ui-components';
+import {
+  CurrencyIcon,
+  Button,
+  Counter,
+} from '@krgaa/react-developer-burger-ui-components';
 import { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { useInView } from 'react-intersection-observer';
@@ -11,6 +15,7 @@ export const BurgerIngredientItem = ({
   onAdd,
   isLockedAdd = false,
   onSectionChange,
+  count = 0,
 }) => {
   // Перетаскиваемый ингредиент
   const [{ isDragging }, dragRef] = useDrag({
@@ -58,11 +63,13 @@ export const BurgerIngredientItem = ({
         onClick={handleClick}
         key={ingredient._id}
         ref={dragRef}
-        style={{ border: `2px solid ${borderColor}` }}
+        style={{ border: `2px solid ${borderColor}`, position: 'relative' }}
       >
         <div>
           <img src={ingredient.image} alt={ingredient.name} />
         </div>
+
+        <div>{count > 0 && <Counter count={count} size="default" />}</div>
 
         <div className={styles.item}>
           <span className="text text_type_digits-default">{ingredient.price}</span>

@@ -7,21 +7,18 @@ import { BurgerConstructorItem } from '@components/burger-constructor-item/burge
 
 import styles from './burger-constructor.module.css';
 
-export const BurgerConstructor = ({ ingredients = [], onClick, onDelete, onAdd }) => {
-  // Зона для перетаскивания ингредиентов
+export const BurgerConstructor = ({
+  ingredients = [],
+  onClick,
+  onDelete,
+  onAdd,
+  onMove,
+}) => {
+  // Зона для перетаскивания ингредиентов из списка
   const [{ isHover, canDrop }, dropRef] = useDrop({
     accept: 'INGREDIENT',
     drop: (draggedItem) => {
       console.log('BurgerConstructor draggedItem', draggedItem);
-      // Проверяем, что перетаскивается ингредиент
-      //if (!draggedItem || !draggedItem.type) return;
-
-      // Предотвращаем добавление булочки, если она уже есть
-      //if (draggedItem.type === 'bun') {
-      //  const existingBuns = ingredients.filter(i => i.type === 'bun');
-      //  if (existingBuns.length > 0) return; // Булочка уже добавлена
-      //}
-
       // Добавляем ингредиент через пропс onAdd
       onAdd(draggedItem);
     },
@@ -39,24 +36,23 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete, onAdd }
 
   //Фильтрация ingredients по типу
   const buns = ingredients.filter((i) => i.type === 'bun');
-  const mains = ingredients.filter((i) => i.type === 'main');
-  const sauces = ingredients.filter((i) => i.type === 'sauce');
+  // Все ингредиенты кроме булок, в том порядке, в котором они были добавлены
+  const otherIngredients = ingredients.filter((i) => i.type !== 'bun');
 
   //Отображаемые ингредиенты
   const [viewBuns, setViewBuns] = useState(buns);
-  const [viewMains, setViewMains] = useState(mains);
-  const [viewSauces, setViewSauces] = useState(sauces);
+  const [viewOtherIngredients, setViewOtherIngredients] = useState(otherIngredients);
 
   // Синхронизация состояний при изменении `ingredients`
   useEffect(() => {
     setViewBuns(buns);
-    setViewMains(mains);
-    setViewSauces(sauces);
+    setViewOtherIngredients(otherIngredients);
   }, [ingredients]);
 
   //total
-  const total = [...viewBuns, ...viewMains, ...viewSauces].reduce(
-    (sum, ingredient) => sum + ingredient.price,
+  const total = ingredients.reduce(
+    (sum, ingredient) =>
+      ingredient.type === 'bun' ? sum + ingredient.price * 2 : sum + ingredient.price,
     0
   );
 
@@ -77,69 +73,92 @@ export const BurgerConstructor = ({ ingredients = [], onClick, onDelete, onAdd }
       {/* Выбранные ингредиенты */}
       <h3>Ваш собранный Бургер</h3>
       <div ref={dropRef} style={dropStyle}>
-        {viewBuns && (
+        {viewBuns.length > 0 ? (
           <div>
             {viewBuns.map((ingredient) => (
-              <div key={`${nanoid()}-top`}>
+              <div key={`${ingredient.id || nanoid()}-top`}>
                 {/* Булочка сверху */}
                 {ingredient.type === 'bun' && (
                   <div className={styles.bun}>
                     <BurgerConstructorItem
-                      key={`${nanoid()}-itop`}
+                      key={`${ingredient.id || nanoid()}-itop`}
                       ingredient={ingredient}
                       type="top"
                       onDelete={onDelete}
-                      isLocked={viewMains.length > 0 || viewSauces.length > 0}
+                      isLocked={true} //viewOtherIngredients.length > 0
+                      isDraggable={false} // Булочки не перетаскиваем
                     />
                   </div>
                 )}
 
-                <div className={styles.ingredients}>
-                  {viewMains.length > 0 &&
-                    viewMains.map((ingredient) => (
-                      <div key={`${nanoid()}-mains`}>
-                        {/* Начинки */}
-                        {ingredient.type != 'bun' && (
-                          <BurgerConstructorItem
-                            key={`${nanoid()}-imains`}
-                            ingredient={ingredient}
-                            type="middle"
-                            onDelete={onDelete}
-                          />
-                        )}
-                      </div>
-                    ))}
-
-                  {viewSauces.length > 0 &&
-                    viewSauces.map((ingredient) => (
-                      <div key={`${nanoid()}-sause`}>
-                        {/*  Соусы */}
-                        {ingredient.type != 'bun' && (
-                          <BurgerConstructorItem
-                            key={`${nanoid()}-isause`}
-                            ingredient={ingredient}
-                            type="middle"
-                            onDelete={onDelete}
-                          />
-                        )}
-                      </div>
-                    ))}
+                <div
+                  className={styles.ingredients}
+                  style={{
+                    minHeight: viewOtherIngredients.length > 0 ? 'auto' : '100px',
+                  }}
+                >
+                  {viewOtherIngredients.length > 0 ? (
+                    viewOtherIngredients.map((ingredient, index) => (
+                      <BurgerConstructorItem
+                        key={ingredient.id || `${nanoid()}-${index}`}
+                        ingredient={ingredient}
+                        type="middle"
+                        onDelete={onDelete}
+                        index={index}
+                        moveIngredient={onMove}
+                        isDraggable={true}
+                      />
+                    ))
+                  ) : (
+                    <div className="text text_type_main-default">
+                      Перетащите сюда ингредиенты (кроме булок).
+                    </div>
+                  )}
                 </div>
 
                 {/* Булочка снизу */}
                 {ingredient.type === 'bun' && (
                   <div className={styles.bun}>
                     <BurgerConstructorItem
-                      key={`${nanoid()}-bottom`}
+                      key={`${ingredient.id || nanoid()}-bottom`}
                       ingredient={ingredient}
                       type="bottom"
                       onDelete={onDelete}
-                      isLocked={viewMains.length > 0 || viewSauces.length > 0}
+                      isLocked={true} //viewOtherIngredients.length > 0
+                      isDraggable={false} // Булочки не перетаскиваем
                     />
                   </div>
                 )}
               </div>
             ))}
+          </div>
+        ) : (
+          // Если нет булок, показываем только зону для ингредиентов
+          <div
+            className={styles.ingredients}
+            style={{
+              minHeight: '200px',
+            }}
+          >
+            {viewOtherIngredients.length > 0 ? (
+              viewOtherIngredients.map((ingredient, index) => (
+                <BurgerConstructorItem
+                  key={ingredient.id || `${nanoid()}-${index}`}
+                  ingredient={ingredient}
+                  type="middle"
+                  onDelete={onDelete}
+                  index={index}
+                  moveIngredient={onMove}
+                  isDraggable={true}
+                />
+              ))
+            ) : (
+              <div>
+                <div className="text text_type_main-default">
+                  Перетащите сюда булочку.
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

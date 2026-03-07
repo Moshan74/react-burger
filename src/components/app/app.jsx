@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchIngredients } from '@/services/ingredientsSlice';
 import { createOrder, resetOrder } from '@/services/orderSlice';
+import { selectIngredientCounts, selectIngredientCountById } from '@/services/selectors';
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
@@ -21,11 +22,10 @@ import styles from './app.module.css';
 export const App = () => {
   const dispatch = useDispatch(); // Получаем функцию dispatch
 
-  //Modal окно
-  const { selectedIngredient, visibleModalIngredient } = useSelector(
-    (state) => state.modal
-  );
-  const [visibleModalOrder, setVisibleModalOrder] = useState(false);
+  //Данные от api
+  useEffect(() => {
+    dispatch(fetchIngredients()); // Отправляем экшен для загрузки ингредиентов
+  }, [dispatch]); // Зависимость от dispatch
 
   // Получаем данные из хранилища
   const {
@@ -33,16 +33,40 @@ export const App = () => {
     loading,
     error,
   } = useSelector((state) => state.ingredients);
-  //Данные от api
-  useEffect(() => {
-    dispatch(fetchIngredients()); // Отправляем экшен для загрузки ингредиентов
-  }, [dispatch]); // Зависимость от dispatch
+
+  //Modal окно
+  const { selectedIngredient, visibleModalIngredient } = useSelector(
+    (state) => state.modal
+  );
+  const [visibleModalOrder, setVisibleModalOrder] = useState(false);
 
   //Выбранные ингредиенты
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   //Блокировка кнопки добавить
   const [isLockedBun, setIsLockedBun] = useState(false);
   const [isLockedIngredients, setIsLockedIngredients] = useState(true);
+
+  // Вычисляем количество каждого ингредиента
+  const ingredientCounts = selectIngredientCounts(selectedIngredients);
+  // Получаем количество для текущего ингредиента в модальном окне
+  const modalIngredientCount = selectedIngredient
+    ? selectIngredientCountById(ingredientCounts, selectedIngredient.data._id)
+    : 0;
+
+  // Фильтрация ингредиентов по типу
+  const filterIngredients = useCallback((ingredients) => {
+    // Порядок типов: булка, начинки, соусы
+    const typeShow = {
+      bun: 1,
+      main: 2,
+      sauce: 3,
+    };
+
+    // Сортируем отфильтрованные ингредиенты по порядку из typeShow
+    return ingredients
+      ? [...ingredients].sort((a, b) => typeShow[a.type] - typeShow[b.type])
+      : [];
+  }, []);
 
   //***Обработчики событий***//
   //Modal Ingredient
@@ -65,21 +89,52 @@ export const App = () => {
   //function handleCloseModalOrder() {
   //  setVisibleModalOrder(false);
   //}
+
   //Добавиьт ингредиент в заказ
   const handleIngredientAdd = useCallback((ingredient) => {
-    //Блокируем отображения Кнопки Добавить
+    //РазБлокируем Кнопки Добавить для ингредиентов
     if (ingredient.type === 'bun') {
-      setIsLockedBun(true);
+      //  setIsLockedBun(true);
       setIsLockedIngredients(false);
     }
 
-    setSelectedIngredients((prev) => [
-      ...prev,
-      {
-        ...ingredient,
-        id: nanoid(),
-      },
-    ]);
+    //Замена булочки
+    //if (ingredient.type === 'bun') {
+    //  setSelectedIngredients((prev) => prev.filter((item) => item.type === 'bun'));
+    //}
+
+    //setSelectedIngredients((prev) => [
+    //  ...prev,
+    //  {
+    //    ...ingredient,
+    //    id: nanoid(),
+    //  },
+    //]);
+
+    setSelectedIngredients((prev) => {
+      // Если добавляем булку, удаляем предыдущую булку из массива
+      if (ingredient.type === 'bun') {
+        // Удаляем все булки из массива (должна быть только одна)
+        const filtered = prev.filter((item) => item.type !== 'bun');
+        // Добавляем новую булку
+        return [
+          ...filtered,
+          {
+            ...ingredient,
+            id: nanoid(),
+          },
+        ];
+      } else {
+        // Для остальных ингредиентов просто добавляем в конец
+        return [
+          ...prev,
+          {
+            ...ingredient,
+            id: nanoid(),
+          },
+        ];
+      }
+    });
   }, []);
   //Очистить ингредиентs из заказа
   //const handleIngredientsEmpty = useCallback(() => {
@@ -92,11 +147,43 @@ export const App = () => {
   const handleIngredientDelete = useCallback((ingredient) => {
     //РазБлокируем отображения Кнопки Добавить
     if (ingredient.type === 'bun') {
-      setIsLockedBun(false);
+      //  setIsLockedBun(false);
       setIsLockedIngredients(true);
     }
 
     setSelectedIngredients((prev) => prev.filter((item) => item.id !== ingredient.id));
+  }, []);
+
+  // Перемещение ингредиента внутри конструктора
+  const handleIngredientMove = useCallback((dragIndex, hoverIndex) => {
+    setSelectedIngredients((prev) => {
+      const items = [...prev];
+
+      // Находим только ингредиенты, которые можно перетаскивать (не булки)
+      const draggableItems = items.filter((item) => item.type !== 'bun');
+      const bunItems = items.filter((item) => item.type === 'bun');
+
+      // Если пытаемся переместить недрагируемый элемент или индексы вне диапазона
+      if (
+        dragIndex < 0 ||
+        dragIndex >= draggableItems.length ||
+        hoverIndex < 0 ||
+        hoverIndex >= draggableItems.length
+      ) {
+        return prev;
+      }
+
+      // Получаем перетаскиваемый элемент
+      const draggedItem = draggableItems[dragIndex];
+
+      // Удаляем элемент из старой позиции
+      draggableItems.splice(dragIndex, 1);
+      // Вставляем элемент в новую позицию
+      draggableItems.splice(hoverIndex, 0, draggedItem);
+
+      // Объединяем обратно с булками (булки в начале массива)
+      return [...bunItems, ...draggableItems];
+    });
   }, []);
 
   /* Заказ */
@@ -161,11 +248,12 @@ export const App = () => {
         ) : (
           <main className={`${styles.main} pl-5 pr-5`}>
             <BurgerIngredients
-              ingredients={ingredients}
+              ingredients={filterIngredients(ingredients)}
               onClick={handleOpenModalIngredient}
               onAdd={handleIngredientAdd}
               isLockedBun={isLockedBun}
               isLockedIngredients={isLockedIngredients}
+              ingredientCounts={ingredientCounts}
             />
             <BurgerConstructor
               ingredients={selectedIngredients}
@@ -173,6 +261,7 @@ export const App = () => {
               onClick={handleOrderSubmit}
               onDelete={handleIngredientDelete}
               onAdd={handleIngredientAdd}
+              onMove={handleIngredientMove}
             />
           </main>
         )}
@@ -192,6 +281,7 @@ export const App = () => {
               onAdd={handleIngredientAdd}
               isLockedBun={isLockedBun}
               isLockedIngredients={isLockedIngredients}
+              count={modalIngredientCount}
             />
           </Modal>
         )}

@@ -1,5 +1,5 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import { BurgerIngredientItem } from '@components/burger-ingredients-item/burger-ingredients-item';
 
@@ -10,31 +10,28 @@ export const BurgerIngredients = ({
   onClick,
   onAdd,
   isLockedBun = false,
-  isLockedIngredients = false,
+  isLockedIngredients = true,
+  ingredientCounts = {},
 }) => {
   //Активный первый Tab
   const [current, setCurrent] = useState('bun');
+
   //Фильтрация ingredients по типу
   const buns = ingredients.filter((i) => i.type === 'bun');
   const sauces = ingredients.filter((i) => i.type === 'sauce');
   const mains = ingredients.filter((i) => i.type === 'main');
   //Отображаемые ингредиенты
   const [viewIngredients, setViewIngredients] = useState(ingredients);
-  //Блокировка кнопки добавить
-  const [isLockedAdd, setIsLockedAdd] = useState(false);
 
-  // Синхронизация состояний при изменении блокировок кнопок
-  useEffect(() => {
+  //Проверка блокировки кнопки добавить
+  function checkBlockAdd(ingredient) {
     //Разблокировка Кнопки Добавить
-    if (current === 'bun') setIsLockedAdd(isLockedBun);
-    else setIsLockedAdd(isLockedIngredients);
-  }, [isLockedBun, isLockedIngredients]);
+    if (ingredient.type === 'bun') return isLockedBun;
+    else return isLockedIngredients;
+  }
 
   //Показать ингредиенты от выбора категорий
   function showIngredients(tab, ingredients) {
-    //Разблокировка Кнопки Добавить
-    if (tab === 'bun') setIsLockedAdd(isLockedBun);
-    else setIsLockedAdd(isLockedIngredients);
     setCurrent(tab);
     setViewIngredients(ingredients);
   }
@@ -90,8 +87,9 @@ export const BurgerIngredients = ({
               ingredient={ingredient}
               onClick={onClick}
               onAdd={onAdd}
-              isLockedAdd={isLockedAdd}
+              isLockedAdd={checkBlockAdd(ingredient)}
               onSectionChange={handleSectionChange}
+              count={ingredientCounts[ingredient._id] || 0}
             />
           ))}
         </div>
