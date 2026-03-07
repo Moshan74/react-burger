@@ -81,14 +81,6 @@ export const App = () => {
   function handleCloseModalIngredient() {
     dispatch(closeModal());
   }
-  //Modal Order
-  //function handleOpenModalOrder() {
-  //  handleIngredientsEmpty();
-  //  setVisibleModalOrder(true);
-  //}
-  //function handleCloseModalOrder() {
-  //  setVisibleModalOrder(false);
-  //}
 
   //Добавиьт ингредиент в заказ
   const handleIngredientAdd = useCallback((ingredient) => {
@@ -97,19 +89,6 @@ export const App = () => {
       //  setIsLockedBun(true);
       setIsLockedIngredients(false);
     }
-
-    //Замена булочки
-    //if (ingredient.type === 'bun') {
-    //  setSelectedIngredients((prev) => prev.filter((item) => item.type === 'bun'));
-    //}
-
-    //setSelectedIngredients((prev) => [
-    //  ...prev,
-    //  {
-    //    ...ingredient,
-    //    id: nanoid(),
-    //  },
-    //]);
 
     setSelectedIngredients((prev) => {
       // Если добавляем булку, удаляем предыдущую булку из массива
@@ -136,13 +115,7 @@ export const App = () => {
       }
     });
   }, []);
-  //Очистить ингредиентs из заказа
-  //const handleIngredientsEmpty = useCallback(() => {
-  //  //РазБлокируем отображения Кнопки Добавить
-  //  setIsLockedBun(true);
-  //  setIsLockedIngredients(false);
-  //  setSelectedIngredients([]);
-  //}, []);
+
   //Очистить ингредиент из заказа
   const handleIngredientDelete = useCallback((ingredient) => {
     //РазБлокируем отображения Кнопки Добавить
@@ -257,7 +230,6 @@ export const App = () => {
             />
             <BurgerConstructor
               ingredients={selectedIngredients}
-              //onClick={handleOpenModalOrder}
               onClick={handleOrderSubmit}
               onDelete={handleIngredientDelete}
               onAdd={handleIngredientAdd}
