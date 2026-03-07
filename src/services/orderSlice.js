@@ -2,27 +2,17 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { request } from '../utils/api';
 
-export const createOrder = createAsyncThunk(
-  'order/create',
-  async (ingredientIds, { rejectWithValue }) => {
-    try {
-      const response = await request('/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ingredients: ingredientIds }),
-      });
+export const createOrder = createAsyncThunk('order/create', async (ingredientIds) => {
+  const response = await request('/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ ingredients: ingredientIds }),
+  });
 
-      console.log('Полный ответ сервера:', response);
-
-      //return response.order.number;
-      return response; // Возвращаем полный ответ сервера
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
+  return response; // Возвращаем полный ответ сервера
+});
 
 const orderSlice = createSlice({
   name: 'order',

@@ -1,5 +1,4 @@
 import { Button, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
-import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 
@@ -76,12 +75,12 @@ export const BurgerConstructor = ({
         {viewBuns.length > 0 ? (
           <div>
             {viewBuns.map((ingredient) => (
-              <div key={`${ingredient.id || nanoid()}-top`}>
+              <div key={`${ingredient._id}-main`}>
                 {/* Булочка сверху */}
                 {ingredient.type === 'bun' && (
                   <div className={styles.bun}>
                     <BurgerConstructorItem
-                      key={`${ingredient.id || nanoid()}-itop`}
+                      key={`${ingredient._id}-top`}
                       ingredient={ingredient}
                       type="top"
                       onDelete={onDelete}
@@ -100,7 +99,7 @@ export const BurgerConstructor = ({
                   {viewOtherIngredients.length > 0 ? (
                     viewOtherIngredients.map((ingredient, index) => (
                       <BurgerConstructorItem
-                        key={ingredient.id || `${nanoid()}-${index}`}
+                        key={ingredient._id}
                         ingredient={ingredient}
                         type="middle"
                         onDelete={onDelete}
@@ -120,7 +119,7 @@ export const BurgerConstructor = ({
                 {ingredient.type === 'bun' && (
                   <div className={styles.bun}>
                     <BurgerConstructorItem
-                      key={`${ingredient.id || nanoid()}-bottom`}
+                      key={`${ingredient._id}-bottom`}
                       ingredient={ingredient}
                       type="bottom"
                       onDelete={onDelete}
@@ -143,7 +142,7 @@ export const BurgerConstructor = ({
             {viewOtherIngredients.length > 0 ? (
               viewOtherIngredients.map((ingredient, index) => (
                 <BurgerConstructorItem
-                  key={ingredient.id || `${nanoid()}-${index}`}
+                  key={ingredient.id}
                   ingredient={ingredient}
                   type="middle"
                   onDelete={onDelete}
