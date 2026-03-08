@@ -1,21 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { request } from '../../utils/api';
 
-export const fetchIngredients = createAsyncThunk(
-  'ingredients/fetchAll',
-  async () => {
-    console.log('createAsyncThunk...');
-    const data = await request('/ingredients');
-    return data.data;
-  }
-);
+import { request } from '../utils/api';
+
+export const fetchIngredients = createAsyncThunk('ingredients/fetchAll', async () => {
+  console.log('createAsyncThunk...');
+  const data = await request('/ingredients');
+  return data.data;
+});
+
+const isRejectedAction = (action) => action.type.endsWith('rejected');
 
 const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState: {
     items: [],
     loading: false,
-    error: null
+    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -40,7 +40,7 @@ const ingredientsSlice = createSlice({
         state.loading = false;
         console.log('isRejectedAction...state', state);
       });
-  }
+  },
 });
 
 export default ingredientsSlice.reducer;
