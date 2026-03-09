@@ -19,7 +19,7 @@ export const BurgerConstructorItem = ({
   const ref = useRef(null);
 
   // Настройка drag для перетаскивания ингредиента
-  const [{ isDragging }, drag] = useDrag({
+  const [, drag] = useDrag({
     type: 'CONSTRUCTOR_INGREDIENT',
     item: () => {
       return { id: ingredient.id, index };
@@ -28,15 +28,6 @@ export const BurgerConstructorItem = ({
       isDragging: monitor.isDragging(),
     }),
     canDrag: isDraggable && ingredient.type !== 'bun',
-    end: (item, monitor) => {
-      const didDrop = monitor.didDrop();
-      if (!didDrop && moveIngredient) {
-        // Если ингредиент был сброшен вне допустимой зоны,
-        // можно вернуть его на исходную позицию
-        // В данном случае ничего не делаем, так как ингредиент
-        // останется на своем месте
-      }
-    },
   });
 
   // Настройка drop для определения позиции при наведении
@@ -90,11 +81,10 @@ export const BurgerConstructorItem = ({
     }
   };
 
-  const opacity = isDragging ? 0.4 : 1;
   const cursor = isDraggable && ingredient.type !== 'bun' ? 'move' : 'default';
 
   return (
-    <div ref={ref} className={styles.control} style={{ opacity, cursor }}>
+    <div ref={ref} className={styles.control} style={{ cursor }}>
       {/* Булочка сверху */}
       {isLocked && type === 'top' && ingredient.type === 'bun' && (
         <ConstructorElement
@@ -118,7 +108,7 @@ export const BurgerConstructorItem = ({
 
       {/* Начинки и соусы */}
       {type === 'middle' && ingredient.type !== 'bun' && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className={styles.middle}>
           {isDraggable && <DragIcon type="primary" />}
           <ConstructorElement
             handleClose={handleDelete}
