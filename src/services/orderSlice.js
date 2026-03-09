@@ -38,7 +38,6 @@ const orderSlice = createSlice({
         state.status = 'loading';
         state.number = null;
         state.error = null;
-        console.log('createOrder.pending', state);
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
@@ -46,13 +45,11 @@ const orderSlice = createSlice({
         state.number = action.payload.order?.number || action.payload.number;
         state.error = null;
         state.orderData = action.payload; // Полный ответ сервера
-        console.log('createOrder.fulfilled', state, action.payload);
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.status = 'failed';
-        console.log('createOrder.rejected', state, action.payload);
       });
   },
 });

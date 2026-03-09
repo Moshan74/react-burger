@@ -17,7 +17,6 @@ export const BurgerConstructor = ({
   const [{ isHover, canDrop }, dropRef] = useDrop({
     accept: 'INGREDIENT',
     drop: (draggedItem) => {
-      console.log('BurgerConstructor draggedItem', draggedItem);
       // Добавляем ингредиент через пропс onAdd
       onAdd(draggedItem);
     },
@@ -99,7 +98,7 @@ export const BurgerConstructor = ({
                   {viewOtherIngredients.length > 0 ? (
                     viewOtherIngredients.map((ingredient, index) => (
                       <BurgerConstructorItem
-                        key={ingredient._id}
+                        key={ingredient.id}
                         ingredient={ingredient}
                         type="middle"
                         onDelete={onDelete}
@@ -133,12 +132,7 @@ export const BurgerConstructor = ({
           </div>
         ) : (
           // Если нет булок, показываем только зону для ингредиентов
-          <div
-            className={styles.ingredients}
-            style={{
-              minHeight: '200px',
-            }}
-          >
+          <div className={styles.ingredients}>
             {viewOtherIngredients.length > 0 ? (
               viewOtherIngredients.map((ingredient, index) => (
                 <BurgerConstructorItem

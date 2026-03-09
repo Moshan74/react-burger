@@ -77,10 +77,6 @@
 
 /* Стили для drag-and-drop */
 
-.dragging {
-  opacity: 0.5;
-}
-
 .dragOver {
   background-color: #f0f8ff;
   border-color: #4c4cff;

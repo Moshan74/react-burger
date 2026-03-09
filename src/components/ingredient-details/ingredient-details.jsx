@@ -27,7 +27,7 @@ export const IngredientDetails = ({
   }, [isLockedBun, isLockedIngredients]);
 
   return (
-    <div className={styles.card} style={{ position: 'relative' }}>
+    <div className={styles.card}>
       <div>
         <img src={ingredient.image_large} alt={ingredient.name} />
       </div>
