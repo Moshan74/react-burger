@@ -1,4 +1,4 @@
-import { Button } from '@krgaa/react-developer-burger-ui-components';
+import { Button, Counter } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useEffect } from 'react';
 
 import styles from './ingredient-details.module.css';
@@ -8,6 +8,7 @@ export const IngredientDetails = ({
   onAdd,
   isLockedBun = false,
   isLockedIngredients = false,
+  count = 0,
 }) => {
   const handleAdd = () => {
     if (onAdd) {
@@ -30,6 +31,8 @@ export const IngredientDetails = ({
       <div>
         <img src={ingredient.image_large} alt={ingredient.name} />
       </div>
+
+      <div>{count > 0 && <Counter count={count} size="default" />}</div>
 
       <h3 className="text text_type_main-medium mt-4 mb-8">{ingredient.name}</h3>
 
